@@ -8,16 +8,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	menuCreateURL            = "https://api.weixin.qq.com/cgi-bin/menu/create"
-	menuGetURL               = "https://api.weixin.qq.com/cgi-bin/menu/get"
-	menuDeleteURL            = "https://api.weixin.qq.com/cgi-bin/menu/delete"
-	menuAddConditionalURL    = "https://api.weixin.qq.com/cgi-bin/menu/addconditional"
-	menuDeleteConditionalURL = "https://api.weixin.qq.com/cgi-bin/menu/delconditional"
-	menuTryMatchURL          = "https://api.weixin.qq.com/cgi-bin/menu/trymatch"
-	menuSelfMenuInfoURL      = "https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info"
-)
-
 // Menu struct
 type Menu struct {
 	*context.Context
@@ -125,7 +115,7 @@ func (menu *Menu) SetMenu(buttons []*Button) error {
 		return err
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", menuCreateURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/create?access_token=%s", menu.Server, accessToken)
 	reqMenu := &reqMenu{
 		Button: buttons,
 	}
@@ -145,7 +135,7 @@ func (menu *Menu) SetMenuByJSON(jsonInfo string) error {
 		return err
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", menuCreateURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/create?access_token=%s", menu.Server, accessToken)
 
 	response, err := util.HTTPPost(uri, jsonInfo)
 	if err != nil {
@@ -162,7 +152,7 @@ func (menu *Menu) GetMenu() (resMenu ResMenu, err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", menuGetURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/get?access_token=%s", menu.Server, accessToken)
 	var response []byte
 	response, err = util.HTTPGet(uri)
 	if err != nil {
@@ -185,7 +175,7 @@ func (menu *Menu) DeleteMenu() error {
 	if err != nil {
 		return err
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", menuDeleteURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/delete?access_token=%s", menu.Server, accessToken)
 	response, err := util.HTTPGet(uri)
 	if err != nil {
 		return err
@@ -201,7 +191,7 @@ func (menu *Menu) AddConditional(buttons []*Button, matchRule *MatchRule) error 
 		return err
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", menuAddConditionalURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/addconditional?access_token=%s", menu.Server, accessToken)
 	reqMenu := &reqMenu{
 		Button:    buttons,
 		MatchRule: matchRule,
@@ -222,7 +212,7 @@ func (menu *Menu) AddConditionalByJSON(jsonInfo string) error {
 		return err
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", menuAddConditionalURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/addconditional?access_token=%s", menu.Server, accessToken)
 	response, err := util.HTTPPost(uri, jsonInfo)
 	if err != nil {
 		return err
@@ -238,7 +228,7 @@ func (menu *Menu) DeleteConditional(menuID int64) error {
 		return err
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", menuDeleteConditionalURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/delconditional?access_token=%s", menu.Server, accessToken)
 	reqDeleteConditional := &reqDeleteConditional{
 		MenuID: menuID,
 	}
@@ -258,7 +248,7 @@ func (menu *Menu) MenuTryMatch(userID string) (buttons []Button, err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", menuTryMatchURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/menu/trymatch?access_token=%s", menu.Server, accessToken)
 	reqMenuTryMatch := &reqMenuTryMatch{userID}
 	var response []byte
 	response, err = util.PostJSON(uri, reqMenuTryMatch)
@@ -285,7 +275,7 @@ func (menu *Menu) GetCurrentSelfMenuInfo() (resSelfMenuInfo ResSelfMenuInfo, err
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", menuSelfMenuInfoURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/get_current_selfmenu_info?access_token=%s", menu.Server, accessToken)
 	var response []byte
 	response, err = util.HTTPGet(uri)
 	if err != nil {

@@ -91,7 +91,7 @@ func (d *Device) DeviceAuthorize(devices []ReqDevice, opType int, product string
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", uriAuthorize, accessToken)
+	uri := fmt.Sprintf("%s/device/authorize_device?access_token=%s", d.Server, accessToken)
 	req := reqDeviceAuthorize{
 		DeviceNum:  fmt.Sprintf("%d", len(devices)),
 		DeviceList: devices,

@@ -8,13 +8,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	templateSendURL = "https://api.weixin.qq.com/cgi-bin/message/template/send"
-	templateListURL = "https://api.weixin.qq.com/cgi-bin/template/get_all_private_template"
-	templateAddURL  = "https://api.weixin.qq.com/cgi-bin/template/api_add_template"
-	templateDelURL  = "https://api.weixin.qq.com/cgi-bin/template/del_private_template"
-)
-
 // Template 模板消息
 type Template struct {
 	*context.Context
@@ -60,7 +53,7 @@ func (tpl *Template) Send(msg *TemplateMessage) (msgID int64, err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", templateSendURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/message/template/send?access_token=%s", tpl.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, msg)
 	if err != nil {
@@ -102,7 +95,7 @@ func (tpl *Template) List() (templateList []*TemplateItem, err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", templateListURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/template/get_all_private_template?access_token=%s", tpl.Server, accessToken)
 	var response []byte
 	response, err = util.HTTPGet(uri)
 	if err != nil {
@@ -133,7 +126,7 @@ func (tpl *Template) Add(shortID string) (templateID string, err error) {
 	var msg = struct {
 		ShortID string `json:"template_id_short"`
 	}{ShortID: shortID}
-	uri := fmt.Sprintf("%s?access_token=%s", templateAddURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/template/api_add_template?access_token=%s", tpl.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, msg)
 	if err != nil {
@@ -160,7 +153,7 @@ func (tpl *Template) Delete(templateID string) (err error) {
 		TemplateID string `json:"template_id"`
 	}{TemplateID: templateID}
 
-	uri := fmt.Sprintf("%s?access_token=%s", templateDelURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/template/del_private_template?access_token=%s", tpl.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, msg)
 	if err != nil {

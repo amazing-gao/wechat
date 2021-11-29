@@ -7,17 +7,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	tagCreateURL         = "https://api.weixin.qq.com/cgi-bin/tags/create?access_token=%s"
-	tagGetURL            = "https://api.weixin.qq.com/cgi-bin/tags/get?access_token=%s"
-	tagUpdateURL         = "https://api.weixin.qq.com/cgi-bin/tags/update?access_token=%s"
-	tagDeleteURL         = "https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=%s"
-	tagUserListURL       = "https://api.weixin.qq.com/cgi-bin/user/tag/get?access_token=%s"
-	tagBatchtaggingURL   = "https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=%s"
-	tagBatchuntaggingURL = "https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=%s"
-	tagUserTidListURL    = "https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=%s"
-)
-
 // TagInfo 标签信息
 type TagInfo struct {
 	ID    int32  `json:"id"`
@@ -41,7 +30,7 @@ func (user *User) CreateTag(tagName string) (tagInfo *TagInfo, err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf(tagCreateURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/tags/create?access_token=%s", user.Server, accessToken)
 	var response []byte
 	var request struct {
 		Tag struct {
@@ -74,7 +63,7 @@ func (user *User) DeleteTag(tagID int32) (err error) {
 	if err != nil {
 		return
 	}
-	url := fmt.Sprintf(tagDeleteURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/tags/delete?access_token=%s", user.Server, accessToken)
 	var request struct {
 		Tag struct {
 			ID int32 `json:"id"`
@@ -94,7 +83,7 @@ func (user *User) UpdateTag(tagID int32, tagName string) (err error) {
 	if err != nil {
 		return
 	}
-	url := fmt.Sprintf(tagUpdateURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/tags/update?access_token=%s", user.Server, accessToken)
 	var request struct {
 		Tag struct {
 			ID   int32  `json:"id"`
@@ -116,7 +105,7 @@ func (user *User) GetTag() (tags []*TagInfo, err error) {
 	if err != nil {
 		return nil, err
 	}
-	url := fmt.Sprintf(tagGetURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/tags/get?access_token=%s", user.Server, accessToken)
 	response, err := util.HTTPGet(url)
 	if err != nil {
 		return
@@ -138,7 +127,7 @@ func (user *User) OpenIDListByTag(tagID int32, nextOpenID ...string) (userList *
 	if err != nil {
 		return nil, err
 	}
-	url := fmt.Sprintf(tagUserListURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/user/tag/get?access_token=%s", user.Server, accessToken)
 	var request = struct {
 		ID     int32  `json:"tagid"`
 		OpenID string `json:"next_openid"`
@@ -176,7 +165,7 @@ func (user *User) BatchTag(openIDList []string, tagID int32) (err error) {
 		OpenIDList: openIDList,
 		TagID:      tagID,
 	}
-	url := fmt.Sprintf(tagBatchtaggingURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/tags/members/batchtagging?access_token=%s", user.Server, accessToken)
 	resp, err := util.PostJSON(url, &request)
 	if err != nil {
 		return
@@ -193,7 +182,7 @@ func (user *User) BatchUntag(openIDList []string, tagID int32) (err error) {
 	if err != nil {
 		return
 	}
-	url := fmt.Sprintf(tagBatchuntaggingURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/tags/members/batchuntagging?access_token=%s", user.Server, accessToken)
 	var request = struct {
 		OpenIDList []string `json:"openid_list"`
 		TagID      int32    `json:"tagid"`
@@ -214,7 +203,7 @@ func (user *User) UserTidList(openID string) (tagIDList []int32, err error) {
 	if err != nil {
 		return
 	}
-	url := fmt.Sprintf(tagUserTidListURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/tags/getidlist?access_token=%s", user.Server, accessToken)
 	var request = struct {
 		OpenID string `json:"openid"`
 		TagID  int32  `json:"tagid"`

@@ -9,7 +9,6 @@ import (
 const (
 	// 将一条长链接转成短链接
 	// https://developers.weixin.qq.com/doc/offiaccount/Account_Management/URL_Shortener.html
-	long2shortURL    = "https://api.weixin.qq.com/cgi-bin/shorturl?access_token=%s"
 	long2shortAction = "long2short"
 )
 
@@ -39,7 +38,7 @@ func (basic *Basic) Long2ShortURL(longURL string) (shortURL string, err error) {
 	if err != nil {
 		return
 	}
-	uri = fmt.Sprintf(long2shortURL, ac)
+	uri = fmt.Sprintf("%s/cgi-bin/shorturl?access_token=%s", basic.Server, ac)
 	responseBytes, err = util.PostJSON(uri, req)
 	if err != nil {
 		return

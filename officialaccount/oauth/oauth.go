@@ -13,10 +13,6 @@ import (
 const (
 	redirectOauthURL       = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect"
 	webAppRedirectOauthURL = "https://open.weixin.qq.com/connect/qrconnect?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect"
-	accessTokenURL         = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code"
-	refreshAccessTokenURL  = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=%s&grant_type=refresh_token&refresh_token=%s"
-	userInfoURL            = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=%s"
-	checkAccessTokenURL    = "https://api.weixin.qq.com/sns/auth?access_token=%s&openid=%s"
 )
 
 // Oauth 保存用户授权信息
@@ -71,7 +67,7 @@ type ResAccessToken struct {
 
 // GetUserAccessToken 通过网页授权的code 换取access_token(区别于context中的access_token)
 func (oauth *Oauth) GetUserAccessToken(code string) (result ResAccessToken, err error) {
-	urlStr := fmt.Sprintf(accessTokenURL, oauth.AppID, oauth.AppSecret, code)
+	urlStr := fmt.Sprintf("%s/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", oauth.Server, oauth.AppID, oauth.AppSecret, code)
 	var response []byte
 	response, err = util.HTTPGet(urlStr)
 	if err != nil {
@@ -90,7 +86,7 @@ func (oauth *Oauth) GetUserAccessToken(code string) (result ResAccessToken, err 
 
 // RefreshAccessToken 刷新access_token
 func (oauth *Oauth) RefreshAccessToken(refreshToken string) (result ResAccessToken, err error) {
-	urlStr := fmt.Sprintf(refreshAccessTokenURL, oauth.AppID, refreshToken)
+	urlStr := fmt.Sprintf("%s/sns/oauth2/refresh_token?appid=%s&grant_type=refresh_token&refresh_token=%s", oauth.Server, oauth.AppID, refreshToken)
 	var response []byte
 	response, err = util.HTTPGet(urlStr)
 	if err != nil {
@@ -109,7 +105,7 @@ func (oauth *Oauth) RefreshAccessToken(refreshToken string) (result ResAccessTok
 
 // CheckAccessToken 检验access_token是否有效
 func (oauth *Oauth) CheckAccessToken(accessToken, openID string) (b bool, err error) {
-	urlStr := fmt.Sprintf(checkAccessTokenURL, accessToken, openID)
+	urlStr := fmt.Sprintf("%s/sns/auth?access_token=%s&openid=%s", oauth.Server, accessToken, openID)
 	var response []byte
 	response, err = util.HTTPGet(urlStr)
 	if err != nil {
@@ -148,7 +144,7 @@ func (oauth *Oauth) GetUserInfo(accessToken, openID, lang string) (result UserIn
 	if lang == "" {
 		lang = "zh_CN"
 	}
-	urlStr := fmt.Sprintf(userInfoURL, accessToken, openID, lang)
+	urlStr := fmt.Sprintf("%s/sns/userinfo?access_token=%s&openid=%s&lang=%s", oauth.Server, accessToken, openID, lang)
 	var response []byte
 	response, err = util.HTTPGet(urlStr)
 	if err != nil {

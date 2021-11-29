@@ -7,16 +7,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-var (
-	// 获取微信服务器IP地址
-	// 文档：https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_the_WeChat_server_IP_address.html
-	getCallbackIPURL  = "https://api.weixin.qq.com/cgi-bin/getcallbackip"
-	getAPIDomainIPURL = "https://api.weixin.qq.com/cgi-bin/get_api_domain_ip"
-
-	// 清理接口调用次数
-	clearQuotaURL = "https://api.weixin.qq.com/cgi-bin/clear_quota"
-)
-
 // Basic struct
 type Basic struct {
 	*context.Context
@@ -41,7 +31,7 @@ func (basic *Basic) GetCallbackIP() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	url := fmt.Sprintf("%s?access_token=%s", getCallbackIPURL, ak)
+	url := fmt.Sprintf("%s/cgi-bin/getcallbackip?access_token=%s", basic.Server, ak)
 	data, err := util.HTTPGet(url)
 	if err != nil {
 		return nil, err
@@ -57,7 +47,7 @@ func (basic *Basic) GetAPIDomainIP() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	url := fmt.Sprintf("%s?access_token=%s", getAPIDomainIPURL, ak)
+	url := fmt.Sprintf("%s/cgi-bin/get_api_domain_ip?access_token=%s", basic.Server, ak)
 	data, err := util.HTTPGet(url)
 	if err != nil {
 		return nil, err
@@ -73,7 +63,7 @@ func (basic *Basic) ClearQuota() error {
 	if err != nil {
 		return err
 	}
-	url := fmt.Sprintf("%s?access_token=%s", clearQuotaURL, ak)
+	url := fmt.Sprintf("%s/cgi-bin/clear_quota?access_token=%s", basic.Server, ak)
 	data, err := util.PostJSON(url, map[string]string{
 		"appid": basic.AppID,
 	})

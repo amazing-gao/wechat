@@ -11,6 +11,7 @@ import (
 
 // OfficialAccount 代公众号实现业务
 type OfficialAccount struct {
+	server string
 	// 授权的公众号的appID
 	appID string
 	*officialaccount.OfficialAccount
@@ -37,7 +38,7 @@ func (officialAccount *OfficialAccount) PlatformOauth() *oauth.Oauth {
 
 // PlatformJs 平台代获取js-sdk配置
 func (officialAccount *OfficialAccount) PlatformJs() *js.Js {
-	return js.NewJs(officialAccount.GetContext(), officialAccount.appID)
+	return js.NewJs(officialAccount.GetContext(), officialAccount.server, officialAccount.appID)
 }
 
 // DefaultAuthrAccessToken 默认获取授权ak的方法

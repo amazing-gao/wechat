@@ -6,11 +6,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	getUserSummary    = "https://api.weixin.qq.com/datacube/getusersummary"
-	getUserAccumulate = "https://api.weixin.qq.com/datacube/getusercumulate"
-)
-
 // ResUserSummary 获取用户增减数据响应
 type ResUserSummary struct {
 	util.CommonError
@@ -40,7 +35,7 @@ func (cube *DataCube) GetUserSummary(s string, e string) (resUserSummary ResUser
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUserSummary, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getusersummary?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -62,7 +57,7 @@ func (cube *DataCube) GetUserAccumulate(s string, e string) (resUserAccumulate R
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUserAccumulate, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getusercumulate?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,

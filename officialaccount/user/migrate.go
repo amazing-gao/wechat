@@ -9,10 +9,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	changeOpenIDURL = "https://api.weixin.qq.com/cgi-bin/changeopenid"
-)
-
 // ChangeOpenIDResult OpenID迁移变化
 type ChangeOpenIDResult struct {
 	OriOpenID string `json:"ori_openid"`
@@ -48,7 +44,7 @@ func (user *User) ListChangeOpenIDs(fromAppID string, openIDs ...string) (list *
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", changeOpenIDURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/changeopenid?access_token=%s", user.Server, accessToken)
 	var resp []byte
 	var req struct {
 		FromAppID  string   `json:"from_appid"`

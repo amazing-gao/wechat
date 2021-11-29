@@ -23,7 +23,7 @@ func (d *Device) CreateQRCode(devices []string) (res ResCreateQRCode, err error)
 	if accessToken, err = d.GetAccessToken(); err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", uriQRCode, accessToken)
+	uri := fmt.Sprintf("%s/device/create_qrcode?access_token=%s", d.Server, accessToken)
 	req := map[string]interface{}{
 		"device_num":     len(devices),
 		"device_id_list": devices,
@@ -56,7 +56,7 @@ func (d *Device) VerifyQRCode(ticket string) (res ResVerifyQRCode, err error) {
 	if accessToken, err = d.GetAccessToken(); err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", uriVerifyQRCode, accessToken)
+	uri := fmt.Sprintf("%s/device/verify_qrcode?access_token=%s", d.Server, accessToken)
 	req := map[string]interface{}{
 		"ticket": ticket,
 	}

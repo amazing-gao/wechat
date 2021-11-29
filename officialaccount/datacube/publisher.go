@@ -37,10 +37,6 @@ const (
 )
 
 const (
-	publisherURL = "https://api.weixin.qq.com/publisher/stat"
-)
-
-const (
 	actionPublisherAdPosGeneral = "publisher_adpos_general"
 	actionPublisherCpsGeneral   = "publisher_cps_general"
 	actionPublisherSettlement   = "publisher_settlement"
@@ -180,7 +176,7 @@ func (cube *DataCube) fetchData(params ParamsPublisher) (response []byte, err er
 		v.Add("ad_slot", string(params.AdSlot))
 	}
 
-	uri := fmt.Sprintf("%s?%s", publisherURL, v.Encode())
+	uri := fmt.Sprintf("%s/publisher/stat?%s", cube.Server, v.Encode())
 
 	response, err = util.HTTPGet(uri)
 	if err != nil {

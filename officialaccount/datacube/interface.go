@@ -6,11 +6,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	getInterfaceSummary     = "https://api.weixin.qq.com/datacube/getinterfacesummary"
-	getInterfaceSummaryHour = "https://api.weixin.qq.com/datacube/getinterfacesummaryhour"
-)
-
 // ResInterfaceSummary 接口分析数据响应
 type ResInterfaceSummary struct {
 	util.CommonError
@@ -45,7 +40,7 @@ func (cube *DataCube) GetInterfaceSummary(s string, e string) (resInterfaceSumma
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getInterfaceSummary, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getinterfacesummary?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -67,7 +62,7 @@ func (cube *DataCube) GetInterfaceSummaryHour(s string, e string) (resInterfaceS
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getInterfaceSummaryHour, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getinterfacesummaryhour?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,

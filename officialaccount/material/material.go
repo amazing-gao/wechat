@@ -9,16 +9,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	addNewsURL          = "https://api.weixin.qq.com/cgi-bin/material/add_news"
-	updateNewsURL       = "https://api.weixin.qq.com/cgi-bin/material/update_news"
-	addMaterialURL      = "https://api.weixin.qq.com/cgi-bin/material/add_material"
-	delMaterialURL      = "https://api.weixin.qq.com/cgi-bin/material/del_material"
-	getMaterialURL      = "https://api.weixin.qq.com/cgi-bin/material/get_material"
-	getMaterialCountURL = "https://api.weixin.qq.com/cgi-bin/material/get_materialcount"
-	batchGetMaterialURL = "https://api.weixin.qq.com/cgi-bin/material/batchget_material"
-)
-
 // PermanentMaterialType 永久素材类型
 type PermanentMaterialType string
 
@@ -65,7 +55,7 @@ func (material *Material) GetNews(id string) ([]*Article, error) {
 	if err != nil {
 		return nil, err
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", getMaterialURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/material/get_material?access_token=%s", material.Server, accessToken)
 
 	var req struct {
 		MediaID string `json:"media_id"`
@@ -109,7 +99,7 @@ func (material *Material) AddNews(articles []*Article) (mediaID string, err erro
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", addNewsURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/material/add_news?access_token=%s", material.Server, accessToken)
 	responseBytes, err := util.PostJSON(uri, req)
 	if err != nil {
 		return
@@ -143,7 +133,7 @@ func (material *Material) UpdateNews(article *Article, mediaID string, index int
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", updateNewsURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/material/update_news?access_token=%s", material.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, req)
 	if err != nil {
@@ -172,7 +162,7 @@ func (material *Material) AddMaterial(mediaType MediaType, filename string) (med
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s&type=%s", addMaterialURL, accessToken, mediaType)
+	uri := fmt.Sprintf("%s/cgi-bin/material/add_material?access_token=%s&type=%s", material.Server, accessToken, mediaType)
 	var response []byte
 	response, err = util.PostFile("media", filename, uri)
 	if err != nil {
@@ -205,7 +195,7 @@ func (material *Material) AddVideo(filename, title, introduction string) (mediaI
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s&type=video", addMaterialURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/material/add_material?access_token=%s&type=video", material.Server, accessToken)
 
 	videoDesc := &reqVideo{
 		Title:        title,
@@ -261,7 +251,7 @@ func (material *Material) DeleteMaterial(mediaID string) error {
 		return err
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", delMaterialURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/material/del_material?access_token=%s", material.Server, accessToken)
 	response, err := util.PostJSON(uri, reqDeleteMaterial{mediaID})
 	if err != nil {
 		return err
@@ -309,7 +299,7 @@ func (material *Material) BatchGetMaterial(permanentMaterialType PermanentMateri
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", batchGetMaterialURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/material/batchget_material?access_token=%s", material.Server, accessToken)
 
 	req := reqBatchGetMaterial{
 		Type:   permanentMaterialType,
@@ -343,7 +333,7 @@ func (material *Material) GetMaterialCount() (res ResMaterialCount, err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", getMaterialCountURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/material/get_materialcount?access_token=%s", material.Server, accessToken)
 	var response []byte
 	response, err = util.HTTPGet(uri)
 	if err != nil {

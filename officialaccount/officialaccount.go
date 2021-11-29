@@ -3,21 +3,19 @@ package officialaccount
 import (
 	"net/http"
 
-	"github.com/silenceper/wechat/v2/officialaccount/ocr"
-
-	"github.com/silenceper/wechat/v2/officialaccount/datacube"
-
 	"github.com/silenceper/wechat/v2/credential"
 	"github.com/silenceper/wechat/v2/officialaccount/basic"
 	"github.com/silenceper/wechat/v2/officialaccount/broadcast"
 	"github.com/silenceper/wechat/v2/officialaccount/config"
 	"github.com/silenceper/wechat/v2/officialaccount/context"
+	"github.com/silenceper/wechat/v2/officialaccount/datacube"
 	"github.com/silenceper/wechat/v2/officialaccount/device"
 	"github.com/silenceper/wechat/v2/officialaccount/js"
 	"github.com/silenceper/wechat/v2/officialaccount/material"
 	"github.com/silenceper/wechat/v2/officialaccount/menu"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
 	"github.com/silenceper/wechat/v2/officialaccount/oauth"
+	"github.com/silenceper/wechat/v2/officialaccount/ocr"
 	"github.com/silenceper/wechat/v2/officialaccount/server"
 	"github.com/silenceper/wechat/v2/officialaccount/user"
 )
@@ -29,7 +27,11 @@ type OfficialAccount struct {
 
 // NewOfficialAccount 实例化公众号API
 func NewOfficialAccount(cfg *config.Config) *OfficialAccount {
-	defaultAkHandle := credential.NewDefaultAccessToken(cfg.AppID, cfg.AppSecret, credential.CacheKeyOfficialAccountPrefix, cfg.Cache)
+	if cfg.Server == "" {
+		cfg.Server = "https://api.weixin.qq.com"
+	}
+
+	defaultAkHandle := credential.NewDefaultAccessToken(cfg.Server, cfg.AppID, cfg.AppSecret, credential.CacheKeyOfficialAccountPrefix, cfg.Cache)
 	ctx := &context.Context{
 		Config:            cfg,
 		AccessTokenHandle: defaultAkHandle,

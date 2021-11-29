@@ -21,12 +21,6 @@ const (
 	MediaTypeThumb MediaType = "thumb"
 )
 
-const (
-	mediaUploadURL      = "https://api.weixin.qq.com/cgi-bin/media/upload"
-	mediaUploadImageURL = "https://api.weixin.qq.com/cgi-bin/media/uploadimg"
-	mediaGetURL         = "https://api.weixin.qq.com/cgi-bin/media/get"
-)
-
 // Media 临时素材上传返回信息
 type Media struct {
 	util.CommonError
@@ -45,7 +39,7 @@ func (material *Material) MediaUpload(mediaType MediaType, filename string) (med
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s&type=%s", mediaUploadURL, accessToken, mediaType)
+	uri := fmt.Sprintf("%s/cgi-bin/media/upload?access_token=%s&type=%s", material.Server, accessToken, mediaType)
 	var response []byte
 	response, err = util.PostFile("media", filename, uri)
 	if err != nil {
@@ -70,7 +64,7 @@ func (material *Material) GetMediaURL(mediaID string) (mediaURL string, err erro
 	if err != nil {
 		return
 	}
-	mediaURL = fmt.Sprintf("%s?access_token=%s&media_id=%s", mediaGetURL, accessToken, mediaID)
+	mediaURL = fmt.Sprintf("%s/cgi-bin/media/get?access_token=%s&media_id=%s", material.Server, accessToken, mediaID)
 	return
 }
 
@@ -89,7 +83,7 @@ func (material *Material) ImageUpload(filename string) (url string, err error) {
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", mediaUploadImageURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/media/uploadimg?access_token=%s", material.Server, accessToken)
 	var response []byte
 	response, err = util.PostFile("media", filename, uri)
 	if err != nil {

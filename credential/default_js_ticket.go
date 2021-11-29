@@ -10,11 +10,9 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-// getTicketURL 获取ticket的url
-const getTicketURL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi"
-
 // DefaultJsTicket 默认获取js ticket方法
 type DefaultJsTicket struct {
+	server         string
 	appID          string
 	cacheKeyPrefix string
 	cache          cache.Cache
@@ -23,8 +21,9 @@ type DefaultJsTicket struct {
 }
 
 // NewDefaultJsTicket new
-func NewDefaultJsTicket(appID string, cacheKeyPrefix string, cache cache.Cache) JsTicketHandle {
+func NewDefaultJsTicket(server, appID string, cacheKeyPrefix string, cache cache.Cache) JsTicketHandle {
 	return &DefaultJsTicket{
+		server:          server,
 		appID:           appID,
 		cache:           cache,
 		cacheKeyPrefix:  cacheKeyPrefix,
@@ -57,7 +56,7 @@ func (js *DefaultJsTicket) GetTicket(accessToken string) (ticketStr string, err 
 	}
 
 	var ticket ResTicket
-	ticket, err = GetTicketFromServer(accessToken)
+	ticket, err = js.GetTicketFromServer(accessToken)
 	if err != nil {
 		return
 	}
@@ -68,9 +67,9 @@ func (js *DefaultJsTicket) GetTicket(accessToken string) (ticketStr string, err 
 }
 
 // GetTicketFromServer 从服务器中获取ticket
-func GetTicketFromServer(accessToken string) (ticket ResTicket, err error) {
+func (js *DefaultJsTicket) GetTicketFromServer(accessToken string) (ticket ResTicket, err error) {
 	var response []byte
-	url := fmt.Sprintf(getTicketURL, accessToken)
+	url := fmt.Sprintf("%s/cgi-bin/ticket/getticket?access_token=%s&type=jsapi", js.server, accessToken)
 	response, err = util.HTTPGet(url)
 	if err != nil {
 		return

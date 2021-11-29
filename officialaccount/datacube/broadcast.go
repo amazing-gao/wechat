@@ -6,15 +6,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	getArticleSummary = "https://api.weixin.qq.com/datacube/getarticlesummary"
-	getArticleTotal   = "https://api.weixin.qq.com/datacube/getarticletotal"
-	getUserRead       = "https://api.weixin.qq.com/datacube/getuserread"
-	getUserReadHour   = "https://api.weixin.qq.com/datacube/getuserreadhour"
-	getUserShare      = "https://api.weixin.qq.com/datacube/getusershare"
-	getUserShareHour  = "https://api.weixin.qq.com/datacube/getusersharehour"
-)
-
 // ResArticleSummary 获取图文群发每日数据响应
 type ResArticleSummary struct {
 	util.CommonError
@@ -145,7 +136,7 @@ func (cube *DataCube) GetArticleSummary(s string, e string) (resArticleSummary R
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getArticleSummary, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getarticlesummary?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -167,7 +158,7 @@ func (cube *DataCube) GetArticleTotal(s string, e string) (resArticleTotal ResAr
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getArticleTotal, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getarticletotal?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -189,7 +180,7 @@ func (cube *DataCube) GetUserRead(s string, e string) (resUserRead ResUserRead, 
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUserRead, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getuserread?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -211,7 +202,7 @@ func (cube *DataCube) GetUserReadHour(s string, e string) (resUserReadHour ResUs
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUserReadHour, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getuserreadhour?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -233,7 +224,7 @@ func (cube *DataCube) GetUserShare(s string, e string) (resUserShare ResUserShar
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUserShare, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getusershare?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -255,7 +246,7 @@ func (cube *DataCube) GetUserShareHour(s string, e string) (resUserShareHour Res
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUserShareHour, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getusersharehour?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,

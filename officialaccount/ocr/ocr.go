@@ -8,16 +8,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	ocrIDCardURL         = "https://api.weixin.qq.com/cv/ocr/idcard"
-	ocrBankCardURL       = "https://api.weixin.qq.com/cv/ocr/bankcard"
-	ocrDrivingURL        = "https://api.weixin.qq.com/cv/ocr/driving"
-	ocrDrivingLicenseURL = "https://api.weixin.qq.com/cv/ocr/drivinglicense"
-	ocrBizLicenseURL     = "https://api.weixin.qq.com/cv/ocr/bizlicense"
-	ocrCommonURL         = "https://api.weixin.qq.com/cv/ocr/comm"
-	ocrPlateNumberURL    = "https://api.weixin.qq.com/cv/ocr/platenum"
-)
-
 // OCR struct
 type OCR struct {
 	*context.Context
@@ -160,7 +150,7 @@ func (ocr *OCR) IDCard(path string) (ResIDCard ResIDCard, err error) {
 		return
 	}
 
-	uri := fmt.Sprintf("%s?img_url=%s&access_token=%s", ocrIDCardURL, url.QueryEscape(path), accessToken)
+	uri := fmt.Sprintf("%s/cv/ocr/idcard?img_url=%s&access_token=%s", ocr.Server, url.QueryEscape(path), accessToken)
 
 	response, err := util.HTTPPost(uri, "")
 	if err != nil {
@@ -179,7 +169,7 @@ func (ocr *OCR) BankCard(path string) (ResBankCard ResBankCard, err error) {
 		return
 	}
 
-	uri := fmt.Sprintf("%s?img_url=%s&access_token=%s", ocrBankCardURL, url.QueryEscape(path), accessToken)
+	uri := fmt.Sprintf("%s/cv/ocr/bankcard?img_url=%s&access_token=%s", ocr.Server, url.QueryEscape(path), accessToken)
 
 	response, err := util.HTTPPost(uri, "")
 	if err != nil {
@@ -198,7 +188,7 @@ func (ocr *OCR) Driving(path string) (ResDriving ResDriving, err error) {
 		return
 	}
 
-	uri := fmt.Sprintf("%s?img_url=%s&access_token=%s", ocrDrivingURL, url.QueryEscape(path), accessToken)
+	uri := fmt.Sprintf("%s/cv/ocr/driving?img_url=%s&access_token=%s", ocr.Server, url.QueryEscape(path), accessToken)
 
 	response, err := util.HTTPPost(uri, "")
 	if err != nil {
@@ -217,7 +207,7 @@ func (ocr *OCR) DrivingLicense(path string) (ResDrivingLicense ResDrivingLicense
 		return
 	}
 
-	uri := fmt.Sprintf("%s?img_url=%s&access_token=%s", ocrDrivingLicenseURL, url.QueryEscape(path), accessToken)
+	uri := fmt.Sprintf("%s/cv/ocr/drivinglicense?img_url=%s&access_token=%s", ocr.Server, url.QueryEscape(path), accessToken)
 
 	response, err := util.HTTPPost(uri, "")
 	if err != nil {
@@ -236,7 +226,7 @@ func (ocr *OCR) BizLicense(path string) (ResBizLicense ResBizLicense, err error)
 		return
 	}
 
-	uri := fmt.Sprintf("%s?img_url=%s&access_token=%s", ocrBizLicenseURL, url.QueryEscape(path), accessToken)
+	uri := fmt.Sprintf("%s/cv/ocr/bizlicense?img_url=%s&access_token=%s", ocr.Server, url.QueryEscape(path), accessToken)
 
 	response, err := util.HTTPPost(uri, "")
 	if err != nil {
@@ -255,7 +245,7 @@ func (ocr *OCR) Common(path string) (ResCommon ResCommon, err error) {
 		return
 	}
 
-	uri := fmt.Sprintf("%s?img_url=%s&access_token=%s", ocrCommonURL, url.QueryEscape(path), accessToken)
+	uri := fmt.Sprintf("%s/cv/ocr/comm?img_url=%s&access_token=%s", ocr.Server, url.QueryEscape(path), accessToken)
 
 	response, err := util.HTTPPost(uri, "")
 	if err != nil {
@@ -274,7 +264,7 @@ func (ocr *OCR) PlateNumber(path string) (ResPlateNumber ResPlateNumber, err err
 		return
 	}
 
-	uri := fmt.Sprintf("%s?img_url=%s&access_token=%s", ocrPlateNumberURL, url.QueryEscape(path), accessToken)
+	uri := fmt.Sprintf("%s/cv/ocr/platenum?img_url=%s&access_token=%s", ocr.Server, url.QueryEscape(path), accessToken)
 
 	response, err := util.HTTPPost(uri, "")
 	if err != nil {

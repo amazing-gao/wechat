@@ -8,17 +8,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	uriAuthorize    = "https://api.weixin.qq.com/device/authorize_device"
-	uriQRCode       = "https://api.weixin.qq.com/device/create_qrcode"
-	uriVerifyQRCode = "https://api.weixin.qq.com/device/verify_qrcode"
-	uriBind         = "https://api.weixin.qq.com/device/bind"
-	uriUnbind       = "https://api.weixin.qq.com/device/unbind"
-	uriCompelBind   = "https://api.weixin.qq.com/device/compel_bind"
-	uriCompelUnbind = "https://api.weixin.qq.com/device/compel_unbind"
-	uriState        = "https://api.weixin.qq.com/device/get_stat"
-)
-
 // Device struct
 type Device struct {
 	*context.Context
@@ -44,7 +33,7 @@ func (d *Device) State(device string) (res ResDeviceState, err error) {
 	if accessToken, err = d.GetAccessToken(); err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s&device_id=%s", uriState, accessToken, device)
+	uri := fmt.Sprintf("%s/device/get_stat?access_token=%s&device_id=%s", d.Server, accessToken, device)
 	var response []byte
 	if response, err = util.HTTPGet(uri); err != nil {
 		return

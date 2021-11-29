@@ -7,13 +7,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	subscribeSendURL         = "https://api.weixin.qq.com/cgi-bin/message/subscribe/bizsend"
-	subscribeTemplateListURL = "https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate"
-	subscribeTemplateAddURL  = "https://api.weixin.qq.com/wxaapi/newtmpl/addtemplate"
-	subscribeTemplateDelURL  = "https://api.weixin.qq.com/wxaapi/newtmpl/deltemplate"
-)
-
 // Subscribe 订阅消息
 type Subscribe struct {
 	*context.Context
@@ -50,7 +43,7 @@ func (tpl *Subscribe) Send(msg *SubscribeMessage) (err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", subscribeSendURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/message/subscribe/bizsend?access_token=%s", tpl.Server, accessToken)
 	response, err := util.PostJSON(uri, msg)
 	if err != nil {
 		return
@@ -79,7 +72,7 @@ func (tpl *Subscribe) List() (templateList []*PrivateSubscribeItem, err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", subscribeTemplateListURL, accessToken)
+	uri := fmt.Sprintf("%s/wxaapi/newtmpl/gettemplate?access_token=%s", tpl.Server, accessToken)
 	var response []byte
 	response, err = util.HTTPGet(uri)
 	if err != nil {
@@ -112,7 +105,7 @@ func (tpl *Subscribe) Add(ShortID string, kidList []int, sceneDesc string) (temp
 		SceneDesc       string `json:"sceneDesc"`
 		KidList         []int  `json:"kidList"`
 	}{TemplateIDShort: ShortID, SceneDesc: sceneDesc, KidList: kidList}
-	uri := fmt.Sprintf("%s?access_token=%s", subscribeTemplateAddURL, accessToken)
+	uri := fmt.Sprintf("%s/wxaapi/newtmpl/addtemplate?access_token=%s", tpl.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, msg)
 	if err != nil {
@@ -137,7 +130,7 @@ func (tpl *Subscribe) Delete(templateID string) (err error) {
 	var msg = struct {
 		TemplateID string `json:"priTmplId"`
 	}{TemplateID: templateID}
-	uri := fmt.Sprintf("%s?access_token=%s", subscribeTemplateDelURL, accessToken)
+	uri := fmt.Sprintf("%s/wxaapi/newtmpl/deltemplate?access_token=%s", tpl.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, msg)
 	if err != nil {

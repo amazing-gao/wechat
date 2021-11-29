@@ -11,8 +11,6 @@ import (
 )
 
 const (
-	// AccessTokenURL 获取access_token的接口
-	accessTokenURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s"
 	// AccessTokenURL 企业微信获取access_token的接口
 	workAccessTokenURL = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s"
 	// CacheKeyOfficialAccountPrefix 微信公众号cache key前缀
@@ -25,6 +23,7 @@ const (
 
 // DefaultAccessToken 默认AccessToken 获取
 type DefaultAccessToken struct {
+	server          string
 	appID           string
 	appSecret       string
 	cacheKeyPrefix  string
@@ -33,11 +32,12 @@ type DefaultAccessToken struct {
 }
 
 // NewDefaultAccessToken new DefaultAccessToken
-func NewDefaultAccessToken(appID, appSecret, cacheKeyPrefix string, cache cache.Cache) AccessTokenHandle {
+func NewDefaultAccessToken(server, appID, appSecret, cacheKeyPrefix string, cache cache.Cache) AccessTokenHandle {
 	if cache == nil {
 		panic("cache is ineed")
 	}
 	return &DefaultAccessToken{
+		server:          server,
 		appID:           appID,
 		appSecret:       appSecret,
 		cache:           cache,
@@ -73,7 +73,7 @@ func (ak *DefaultAccessToken) GetAccessToken() (accessToken string, err error) {
 
 	// cache失效，从微信服务器获取
 	var resAccessToken ResAccessToken
-	resAccessToken, err = GetTokenFromServer(fmt.Sprintf(accessTokenURL, ak.appID, ak.appSecret))
+	resAccessToken, err = GetTokenFromServer(fmt.Sprintf("%s/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s", ak.server, ak.appID, ak.appSecret))
 	if err != nil {
 		return
 	}

@@ -7,16 +7,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	sendURLByTag      = "https://api.weixin.qq.com/cgi-bin/message/mass/sendall"
-	sendURLByOpenID   = "https://api.weixin.qq.com/cgi-bin/message/mass/send"
-	deleteSendURL     = "https://api.weixin.qq.com/cgi-bin/message/mass/delete"
-	previewSendURL    = "https://api.weixin.qq.com/cgi-bin/message/mass/preview"
-	massStatusSendURL = "https://api.weixin.qq.com/cgi-bin/message/mass/get"
-	getSpeedSendURL   = "https://api.weixin.qq.com/cgi-bin/message/mass/speed/get"
-	setSpeedSendURL   = "https://api.weixin.qq.com/cgi-bin/message/mass/speed/set"
-)
-
 // MsgType 发送消息类型
 type MsgType string
 
@@ -255,7 +245,7 @@ func (broadcast *Broadcast) Delete(msgID int64, articleIDx int64) error {
 		"msg_id":      msgID,
 		"article_idx": articleIDx,
 	}
-	url := fmt.Sprintf("%s?access_token=%s", deleteSendURL, ak)
+	url := fmt.Sprintf("%s/cgi-bin/message/mass/delete?access_token=%s", broadcast.Server, ak)
 	data, err := util.PostJSON(url, req)
 	if err != nil {
 		return err
@@ -278,7 +268,7 @@ func (broadcast *Broadcast) GetMassStatus(msgID string) (*Result, error) {
 	req := map[string]interface{}{
 		"msg_id": msgID,
 	}
-	url := fmt.Sprintf("%s?access_token=%s", massStatusSendURL, ak)
+	url := fmt.Sprintf("%s/cgi-bin/message/mass/get?access_token=%s", broadcast.Server, ak)
 	data, err := util.PostJSON(url, req)
 	if err != nil {
 		return nil, err
@@ -295,7 +285,7 @@ func (broadcast *Broadcast) GetSpeed() (*SpeedResult, error) {
 		return nil, err
 	}
 	req := map[string]interface{}{}
-	url := fmt.Sprintf("%s?access_token=%s", getSpeedSendURL, ak)
+	url := fmt.Sprintf("%s/cgi-bin/message/mass/speed/get?access_token=%s", broadcast.Server, ak)
 	data, err := util.PostJSON(url, req)
 	if err != nil {
 		return nil, err
@@ -314,7 +304,7 @@ func (broadcast *Broadcast) SetSpeed(speed int) (*SpeedResult, error) {
 	req := map[string]interface{}{
 		"speed": speed,
 	}
-	url := fmt.Sprintf("%s?access_token=%s", setSpeedSendURL, ak)
+	url := fmt.Sprintf("%s/cgi-bin/message/mass/speed/set?access_token=%s", broadcast.Server, ak)
 	data, err := util.PostJSON(url, req)
 	if err != nil {
 		return nil, err
@@ -330,13 +320,13 @@ func (broadcast *Broadcast) chooseTagOrOpenID(user *User, req *sendRequest) (ret
 		req.Filter = map[string]interface{}{
 			"is_to_all": true,
 		}
-		sendURL = sendURLByTag
+		sendURL = fmt.Sprintf("%s/cgi-bin/message/mass/sendall", broadcast.Server)
 	} else {
 		if broadcast.preview {
 			// 预览 默认发给第一个用户
 			if len(user.OpenID) != 0 {
 				req.ToUser = user.OpenID[0]
-				sendURL = previewSendURL
+				sendURL = fmt.Sprintf("%s/cgi-bin/message/mass/preview", broadcast.Server)
 			}
 		} else {
 			if user.TagID != 0 {
@@ -344,11 +334,11 @@ func (broadcast *Broadcast) chooseTagOrOpenID(user *User, req *sendRequest) (ret
 					"is_to_all": false,
 					"tag_id":    user.TagID,
 				}
-				sendURL = sendURLByTag
+				sendURL = fmt.Sprintf("%s/cgi-bin/message/mass/sendall", broadcast.Server)
 			}
 			if len(user.OpenID) != 0 {
 				req.ToUser = user.OpenID
-				sendURL = sendURLByOpenID
+				sendURL = fmt.Sprintf("%s/cgi-bin/message/mass/send", broadcast.Server)
 			}
 		}
 	}

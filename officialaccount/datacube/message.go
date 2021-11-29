@@ -6,16 +6,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	getUpstreamMsg          = "https://api.weixin.qq.com/datacube/getupstreammsg"
-	getUpstreamMsgHour      = "https://api.weixin.qq.com/datacube/getupstreammsghour"
-	getUpstreamMsgWeek      = "https://api.weixin.qq.com/datacube/getupstreammsgweek"
-	getUpstreamMsgMonth     = "https://api.weixin.qq.com/datacube/getupstreammsgmonth"
-	getUpstreamMsgDist      = "https://api.weixin.qq.com/datacube/getupstreammsgdist"
-	getUpstreamMsgDistWeek  = "https://api.weixin.qq.com/datacube/getupstreammsgdistweek"
-	getUpstreamMsgDistMonth = "https://api.weixin.qq.com/datacube/getupstreammsgdistmonth"
-)
-
 // ResUpstreamMsg 获取消息发送概况数据响应
 type ResUpstreamMsg struct {
 	util.CommonError
@@ -105,7 +95,7 @@ func (cube *DataCube) GetUpstreamMsg(s string, e string) (resUpstreamMsg ResUpst
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUpstreamMsg, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getupstreammsg?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -127,7 +117,7 @@ func (cube *DataCube) GetUpstreamMsgHour(s string, e string) (resUpstreamMsgHour
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUpstreamMsgHour, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getupstreammsghour?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -149,7 +139,7 @@ func (cube *DataCube) GetUpstreamMsgWeek(s string, e string) (resUpstreamMsgWeek
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUpstreamMsgWeek, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getupstreammsgweek?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -171,7 +161,7 @@ func (cube *DataCube) GetUpstreamMsgMonth(s string, e string) (resUpstreamMsgMon
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUpstreamMsgMonth, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getupstreammsgmonth?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -193,7 +183,7 @@ func (cube *DataCube) GetUpstreamMsgDist(s string, e string) (resUpstreamMsgDist
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUpstreamMsgDist, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getupstreammsgdist?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -215,7 +205,7 @@ func (cube *DataCube) GetUpstreamMsgDistWeek(s string, e string) (resUpstreamMsg
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUpstreamMsgDistWeek, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getupstreammsgdistweek?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,
@@ -237,7 +227,7 @@ func (cube *DataCube) GetUpstreamMsgDistMonth(s string, e string) (resUpstreamMs
 		return
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", getUpstreamMsgDistMonth, accessToken)
+	uri := fmt.Sprintf("%s/datacube/getupstreammsgdistmonth?access_token=%s", cube.Server, accessToken)
 	reqDate := &reqDate{
 		BeginDate: s,
 		EndDate:   e,

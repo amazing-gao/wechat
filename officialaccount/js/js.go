@@ -26,7 +26,7 @@ type Config struct {
 func NewJs(context *context.Context) *Js {
 	js := new(Js)
 	js.Context = context
-	jsTicketHandle := credential.NewDefaultJsTicket(context.AppID, credential.CacheKeyOfficialAccountPrefix, context.Cache)
+	jsTicketHandle := credential.NewDefaultJsTicket(context.Server, context.AppID, credential.CacheKeyOfficialAccountPrefix, context.Cache)
 	js.SetJsTicketHandle(jsTicketHandle)
 	return js
 }

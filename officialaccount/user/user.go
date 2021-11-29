@@ -9,12 +9,6 @@ import (
 	"github.com/silenceper/wechat/v2/util"
 )
 
-const (
-	userInfoURL     = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN"
-	updateRemarkURL = "https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token=%s"
-	userListURL     = "https://api.weixin.qq.com/cgi-bin/user/get"
-)
-
 // User 用户管理
 type User struct {
 	*context.Context
@@ -70,7 +64,7 @@ func (user *User) GetUserInfo(openID string) (userInfo *Info, err error) {
 		return
 	}
 
-	uri := fmt.Sprintf(userInfoURL, accessToken, openID)
+	uri := fmt.Sprintf("%s/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN", user.Server, accessToken, openID)
 	var response []byte
 	response, err = util.HTTPGet(uri)
 	if err != nil {
@@ -96,7 +90,7 @@ func (user *User) UpdateRemark(openID, remark string) (err error) {
 		return
 	}
 
-	uri := fmt.Sprintf(updateRemarkURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/user/info/updateremark?access_token=%s", user.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, map[string]string{"openid": openID, "remark": remark})
 	if err != nil {
@@ -113,7 +107,7 @@ func (user *User) ListUserOpenIDs(nextOpenid ...string) (*OpenidList, error) {
 		return nil, err
 	}
 
-	uri, _ := url.Parse(userListURL)
+	uri, _ := url.Parse(fmt.Sprintf("%s/cgi-bin/user/get", user.Server))
 	q := uri.Query()
 	q.Set("access_token", accessToken)
 	if len(nextOpenid) > 0 && nextOpenid[0] != "" {

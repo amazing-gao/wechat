@@ -7,9 +7,9 @@ https://open.work.weixin.qq.com/api/doc/90000/90135/91774
 ### 使用方式
 
 1、安装 go module
-> go get -u github.com/silenceper/wechat/v2
+> go get -u github.com/amazing-gao/wechat/v2
 
-2、从 `github.com/silenceper/wechat/v2/work/msgaudit/lib` 文件夹下复制 `libWeWorkFinanceSdk_C.so` 动态库文件到系统动态链接库默认文件夹下，或者复制到任意文件夹并在当前文件夹下执行 `export LD_LIBRARY_PATH=$(pwd)`命令设置动态链接库检索地址后即可正常使用
+2、从 `github.com/amazing-gao/wechat/v2/work/msgaudit/lib` 文件夹下复制 `libWeWorkFinanceSdk_C.so` 动态库文件到系统动态链接库默认文件夹下，或者复制到任意文件夹并在当前文件夹下执行 `export LD_LIBRARY_PATH=$(pwd)`命令设置动态链接库检索地址后即可正常使用
 
 3、编译要求
 - 开启CGO: `CGO_ENABLED=1`
@@ -23,9 +23,9 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/silenceper/wechat/v2"
-	"github.com/silenceper/wechat/v2/work/msgaudit"
-	"github.com/silenceper/wechat/v2/work/config"
+	"github.com/amazing-gao/wechat/v2"
+	"github.com/amazing-gao/wechat/v2/work/msgaudit"
+	"github.com/amazing-gao/wechat/v2/work/config"
 	"io/ioutil"
 	"os"
 	"path"
@@ -34,13 +34,13 @@ import (
 func main() {
 	//初始化客户端
 	wechatClient := wechat.NewWechat()
-	
+
 	workClient := wechatClient.GetWork(&config.Config{
 		CorpID:        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 		CorpSecret:    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 		RasPrivateKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
 	})
-	
+
 	client, err := workClient.GetMsgAudit()
 	if err != nil {
 		fmt.Printf("SDK 初始化失败：%v \n", err)
@@ -90,7 +90,7 @@ func main() {
 			break
 		}
 	}
-	
+
 	//释放SDK实例
 	client.Free()
 }

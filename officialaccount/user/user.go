@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/silenceper/wechat/v2/officialaccount/context"
-	"github.com/silenceper/wechat/v2/util"
+	"github.com/amazing-gao/wechat/v2/officialaccount/context"
+	"github.com/amazing-gao/wechat/v2/util"
 )
 
 // User 用户管理

@@ -1,9 +1,9 @@
 package miniprogram
 
 import (
-	openContext "github.com/silenceper/wechat/v2/openplatform/context"
-	"github.com/silenceper/wechat/v2/openplatform/miniprogram/basic"
-	"github.com/silenceper/wechat/v2/openplatform/miniprogram/component"
+	openContext "github.com/amazing-gao/wechat/v2/openplatform/context"
+	"github.com/amazing-gao/wechat/v2/openplatform/miniprogram/basic"
+	"github.com/amazing-gao/wechat/v2/openplatform/miniprogram/component"
 )
 
 // MiniProgram 代小程序实现业务

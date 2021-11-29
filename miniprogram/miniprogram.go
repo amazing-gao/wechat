@@ -1,20 +1,20 @@
 package miniprogram
 
 import (
-	"github.com/silenceper/wechat/v2/credential"
-	"github.com/silenceper/wechat/v2/miniprogram/analysis"
-	"github.com/silenceper/wechat/v2/miniprogram/auth"
-	"github.com/silenceper/wechat/v2/miniprogram/config"
-	"github.com/silenceper/wechat/v2/miniprogram/content"
-	"github.com/silenceper/wechat/v2/miniprogram/context"
-	"github.com/silenceper/wechat/v2/miniprogram/encryptor"
-	"github.com/silenceper/wechat/v2/miniprogram/message"
-	"github.com/silenceper/wechat/v2/miniprogram/qrcode"
-	"github.com/silenceper/wechat/v2/miniprogram/shortlink"
-	"github.com/silenceper/wechat/v2/miniprogram/subscribe"
-	"github.com/silenceper/wechat/v2/miniprogram/tcb"
-	"github.com/silenceper/wechat/v2/miniprogram/urllink"
-	"github.com/silenceper/wechat/v2/miniprogram/werun"
+	"github.com/amazing-gao/wechat/v2/credential"
+	"github.com/amazing-gao/wechat/v2/miniprogram/analysis"
+	"github.com/amazing-gao/wechat/v2/miniprogram/auth"
+	"github.com/amazing-gao/wechat/v2/miniprogram/config"
+	"github.com/amazing-gao/wechat/v2/miniprogram/content"
+	"github.com/amazing-gao/wechat/v2/miniprogram/context"
+	"github.com/amazing-gao/wechat/v2/miniprogram/encryptor"
+	"github.com/amazing-gao/wechat/v2/miniprogram/message"
+	"github.com/amazing-gao/wechat/v2/miniprogram/qrcode"
+	"github.com/amazing-gao/wechat/v2/miniprogram/shortlink"
+	"github.com/amazing-gao/wechat/v2/miniprogram/subscribe"
+	"github.com/amazing-gao/wechat/v2/miniprogram/tcb"
+	"github.com/amazing-gao/wechat/v2/miniprogram/urllink"
+	"github.com/amazing-gao/wechat/v2/miniprogram/werun"
 )
 
 // MiniProgram 微信小程序相关API

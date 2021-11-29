@@ -3,7 +3,7 @@ package datacube
 import (
 	"fmt"
 
-	"github.com/silenceper/wechat/v2/util"
+	"github.com/amazing-gao/wechat/v2/util"
 )
 
 // ResUpstreamMsg 获取消息发送概况数据响应

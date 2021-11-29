@@ -3,7 +3,7 @@ package datacube
 import (
 	"fmt"
 
-	"github.com/silenceper/wechat/v2/util"
+	"github.com/amazing-gao/wechat/v2/util"
 )
 
 // ResUserSummary 获取用户增减数据响应

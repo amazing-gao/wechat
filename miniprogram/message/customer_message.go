@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	customerSendMessage = "https://api.weixin.qq.com/cgi-bin/message/custom/send"
+	customerSendMessage = "https://api.weixin.qq.com"
 )
 
 // Manager 消息管理者，可以发送消息
@@ -114,7 +114,7 @@ func (manager *Manager) Send(msg *CustomerMessage) error {
 	if err != nil {
 		return err
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", customerSendMessage, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/message/custom/send?access_token=%s", manager.Server, accessToken)
 	response, err := util.PostJSON(uri, msg)
 	if err != nil {
 		return err

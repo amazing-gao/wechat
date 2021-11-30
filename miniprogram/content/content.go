@@ -7,11 +7,6 @@ import (
 	"github.com/amazing-gao/wechat/v2/util"
 )
 
-const (
-	checkTextURL  = "https://api.weixin.qq.com/wxa/msg_sec_check?access_token=%s"
-	checkImageURL = "https://api.weixin.qq.com/wxa/img_sec_check?access_token=%s"
-)
-
 // Content 内容安全
 type Content struct {
 	*context.Context
@@ -30,7 +25,7 @@ func (content *Content) CheckText(text string) error {
 		return err
 	}
 	response, err := util.PostJSON(
-		fmt.Sprintf(checkTextURL, accessToken),
+		fmt.Sprintf("%s/wxa/msg_sec_check?access_token=%s", content.Server, accessToken),
 		map[string]string{
 			"content": text,
 		},
@@ -52,7 +47,7 @@ func (content *Content) CheckImage(media string) error {
 	response, err := util.PostFile(
 		"media",
 		media,
-		fmt.Sprintf(checkImageURL, accessToken),
+		fmt.Sprintf("%s/wxa/img_sec_check?access_token=%s", content.Server, accessToken),
 	)
 	if err != nil {
 		return err

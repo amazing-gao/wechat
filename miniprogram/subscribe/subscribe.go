@@ -7,28 +7,6 @@ import (
 	"github.com/amazing-gao/wechat/v2/util"
 )
 
-const (
-	// 发送订阅消息
-	// https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.send.html
-	subscribeSendURL = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send"
-
-	// 获取当前帐号下的个人模板列表
-	// https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.getTemplateList.html
-	getTemplateURL = "https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate"
-
-	// 添加订阅模板
-	// https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.addTemplate.html
-	addTemplateURL = "https://api.weixin.qq.com/wxaapi/newtmpl/addtemplate"
-
-	// 删除私有模板
-	// https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.deleteTemplate.html
-	delTemplateURL = "https://api.weixin.qq.com/wxaapi/newtmpl/deltemplate"
-
-	// 统一服务消息
-	// https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/uniform-message/uniformMessage.send.html
-	uniformMessageSend = "https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send"
-)
-
 // Subscribe 订阅消息
 type Subscribe struct {
 	*context.Context
@@ -77,7 +55,7 @@ func (s *Subscribe) Send(msg *Message) (err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", subscribeSendURL, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/message/subscribe/send?access_token=%s", s.Server, accessToken)
 	response, err := util.PostJSON(uri, msg)
 	if err != nil {
 		return
@@ -92,7 +70,7 @@ func (s *Subscribe) ListTemplates() (*TemplateList, error) {
 	if err != nil {
 		return nil, err
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", getTemplateURL, accessToken)
+	uri := fmt.Sprintf("%s/wxaapi/newtmpl/gettemplate?access_token=%s", s.Server, accessToken)
 	response, err := util.HTTPGet(uri)
 	if err != nil {
 		return nil, err
@@ -134,7 +112,7 @@ func (s *Subscribe) UniformSend(msg *UniformMessage) (err error) {
 	if err != nil {
 		return
 	}
-	uri := fmt.Sprintf("%s?access_token=%s", uniformMessageSend, accessToken)
+	uri := fmt.Sprintf("%s/cgi-bin/message/wxopen/template/uniform_send?access_token=%s", s.Server, accessToken)
 	response, err := util.PostJSON(uri, msg)
 	if err != nil {
 		return
@@ -160,7 +138,7 @@ func (s *Subscribe) Add(ShortID string, kidList []int, sceneDesc string) (templa
 		SceneDesc       string `json:"sceneDesc"`
 		KidList         []int  `json:"kidList"`
 	}{TemplateIDShort: ShortID, SceneDesc: sceneDesc, KidList: kidList}
-	uri := fmt.Sprintf("%s?access_token=%s", addTemplateURL, accessToken)
+	uri := fmt.Sprintf("%s/wxaapi/newtmpl/addtemplate?access_token=%s", s.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, msg)
 	if err != nil {
@@ -185,7 +163,7 @@ func (s *Subscribe) Delete(templateID string) (err error) {
 	var msg = struct {
 		TemplateID string `json:"priTmplId"`
 	}{TemplateID: templateID}
-	uri := fmt.Sprintf("%s?access_token=%s", delTemplateURL, accessToken)
+	uri := fmt.Sprintf("%s/wxaapi/newtmpl/deltemplate?access_token=%s", s.Server, accessToken)
 	var response []byte
 	response, err = util.PostJSON(uri, msg)
 	if err != nil {

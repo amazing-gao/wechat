@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	createWXAQRCodeURL   = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=%s"
-	getWXACodeURL        = "https://api.weixin.qq.com/wxa/getwxacode?access_token=%s"
-	getWXACodeUnlimitURL = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%s"
+	createWXAQRCodeURL   = "/cgi-bin/wxaapp/createwxaqrcode?access_token=%s"
+	getWXACodeURL        = "/wxa/getwxacode?access_token=%s"
+	getWXACodeUnlimitURL = "/wxa/getwxacodeunlimit?access_token=%s"
 )
 
 // QRCode struct
@@ -60,7 +60,7 @@ func (qrCode *QRCode) fetchCode(urlStr string, body interface{}) (response []byt
 		return
 	}
 
-	urlStr = fmt.Sprintf(urlStr, accessToken)
+	urlStr = fmt.Sprintf(qrCode.Server+urlStr, accessToken)
 	var contentType string
 	response, contentType, err = util.PostJSONWithRespContentType(urlStr, body)
 	if err != nil {

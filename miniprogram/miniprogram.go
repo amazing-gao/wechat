@@ -12,7 +12,6 @@ import (
 	"github.com/amazing-gao/wechat/v2/miniprogram/qrcode"
 	"github.com/amazing-gao/wechat/v2/miniprogram/shortlink"
 	"github.com/amazing-gao/wechat/v2/miniprogram/subscribe"
-	"github.com/amazing-gao/wechat/v2/miniprogram/tcb"
 	"github.com/amazing-gao/wechat/v2/miniprogram/urllink"
 	"github.com/amazing-gao/wechat/v2/miniprogram/werun"
 )
@@ -60,11 +59,6 @@ func (miniProgram *MiniProgram) GetAnalysis() *analysis.Analysis {
 // GetQRCode 小程序码相关API
 func (miniProgram *MiniProgram) GetQRCode() *qrcode.QRCode {
 	return qrcode.NewQRCode(miniProgram.ctx)
-}
-
-// GetTcb 小程序云开发API
-func (miniProgram *MiniProgram) GetTcb() *tcb.Tcb {
-	return tcb.NewTcb(miniProgram.ctx)
 }
 
 // GetSubscribe 小程序订阅消息

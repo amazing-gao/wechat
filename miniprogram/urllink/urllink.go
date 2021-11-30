@@ -17,8 +17,6 @@ func NewURLLink(ctx *context.Context) *URLLink {
 	return &URLLink{Context: ctx}
 }
 
-const generateURL = "https://api.weixin.qq.com/wxa/generate_urllink"
-
 // TExpireType 失效类型 (指定时间戳/指定间隔)
 type TExpireType int
 
@@ -56,7 +54,7 @@ func (u *URLLink) Generate(params *ULParams) (string, error) {
 		return "", err
 	}
 
-	uri := fmt.Sprintf("%s?access_token=%s", generateURL, accessToken)
+	uri := fmt.Sprintf("%s/wxa/generate_urllink?access_token=%s", u.Server, accessToken)
 	response, err := util.PostJSON(uri, params)
 	if err != nil {
 		return "", err

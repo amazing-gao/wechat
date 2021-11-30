@@ -11,25 +11,25 @@ import (
 
 const (
 	// 获取用户访问小程序日留存
-	getAnalysisDailyRetainURL = "https://api.weixin.qq.com/datacube/getweanalysisappiddailyretaininfo?access_token=%s"
+	getAnalysisDailyRetainURL = "/datacube/getweanalysisappiddailyretaininfo?access_token=%s"
 	// 获取用户访问小程序月留存
-	getAnalysisMonthlyRetainURL = "https://api.weixin.qq.com/datacube/getweanalysisappidmonthlyretaininfo?access_token=%s"
+	getAnalysisMonthlyRetainURL = "/datacube/getweanalysisappidmonthlyretaininfo?access_token=%s"
 	// 获取用户访问小程序周留存
-	getAnalysisWeeklyRetainURL = "https://api.weixin.qq.com/datacube/getweanalysisappidweeklyretaininfo?access_token=%s"
+	getAnalysisWeeklyRetainURL = "/datacube/getweanalysisappidweeklyretaininfo?access_token=%s"
 	// 获取用户访问小程序数据概况
-	getAnalysisDailySummaryURL = "https://api.weixin.qq.com/datacube/getweanalysisappiddailysummarytrend?access_token=%s"
+	getAnalysisDailySummaryURL = "/datacube/getweanalysisappiddailysummarytrend?access_token=%s"
 	// 获取用户访问小程序数据日趋势
-	getAnalysisDailyVisitTrendURL = "https://api.weixin.qq.com/datacube/getweanalysisappiddailyvisittrend?access_token=%s"
+	getAnalysisDailyVisitTrendURL = "/datacube/getweanalysisappiddailyvisittrend?access_token=%s"
 	// 获取用户访问小程序数据月趋势
-	getAnalysisMonthlyVisitTrendURL = "https://api.weixin.qq.com/datacube/getweanalysisappidmonthlyvisittrend?access_token=%s"
+	getAnalysisMonthlyVisitTrendURL = "/datacube/getweanalysisappidmonthlyvisittrend?access_token=%s"
 	// 获取用户访问小程序数据周趋势
-	getAnalysisWeeklyVisitTrendURL = "https://api.weixin.qq.com/datacube/getweanalysisappidweeklyvisittrend?access_token=%s"
+	getAnalysisWeeklyVisitTrendURL = "/datacube/getweanalysisappidweeklyvisittrend?access_token=%s"
 	// 获取小程序新增或活跃用户的画像分布数据
-	getAnalysisUserPortraitURL = "https://api.weixin.qq.com/datacube/getweanalysisappiduserportrait?access_token=%s"
+	getAnalysisUserPortraitURL = "/datacube/getweanalysisappiduserportrait?access_token=%s"
 	// 获取用户小程序访问分布数据
-	getAnalysisVisitDistributionURL = "https://api.weixin.qq.com/datacube/getweanalysisappidvisitdistribution?access_token=%s"
+	getAnalysisVisitDistributionURL = "/datacube/getweanalysisappidvisitdistribution?access_token=%s"
 	// 访问页面
-	getAnalysisVisitPageURL = "https://api.weixin.qq.com/datacube/getweanalysisappidvisitpage?access_token=%s"
+	getAnalysisVisitPageURL = "/datacube/getweanalysisappidvisitpage?access_token=%s"
 )
 
 // Analysis analyis 数据分析
@@ -49,7 +49,7 @@ func (analysis *Analysis) fetchData(urlStr string, body interface{}) (response [
 	if err != nil {
 		return
 	}
-	urlStr = fmt.Sprintf(urlStr, accessToken)
+	urlStr = fmt.Sprintf(analysis.Server+urlStr, accessToken)
 	response, err = util.PostJSON(urlStr, body)
 	return
 }

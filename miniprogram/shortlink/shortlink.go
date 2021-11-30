@@ -7,10 +7,6 @@ import (
 	"github.com/amazing-gao/wechat/v2/util"
 )
 
-const (
-	generateShortLinkURL = "https://api.weixin.qq.com/wxa/genwxashortlink?access_token=%s"
-)
-
 // ShortLink 短链接
 type ShortLink struct {
 	*context.Context
@@ -51,7 +47,7 @@ func (shortLink *ShortLink) generate(shortLinkParams ShortLinker) (string, error
 		return "", err
 	}
 
-	urlStr := fmt.Sprintf(generateShortLinkURL, accessToken)
+	urlStr := fmt.Sprintf("%s/wxa/genwxashortlink?access_token=%s", shortLink.Server, accessToken)
 	response, err := util.PostJSON(urlStr, shortLinkParams)
 	if err != nil {
 		return "", err

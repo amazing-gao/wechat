@@ -9,12 +9,6 @@ import (
 	"github.com/amazing-gao/wechat/v2/util"
 )
 
-const (
-	code2SessionURL = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code"
-
-	checkEncryptedDataURL = "https://api.weixin.qq.com/wxa/business/checkencryptedmsg?access_token=%s"
-)
-
 // Auth 登录/用户信息
 type Auth struct {
 	*context.Context
@@ -50,7 +44,7 @@ func (auth *Auth) Code2Session(jsCode string) (result ResCode2Session, err error
 // Code2SessionContext 登录凭证校验。
 func (auth *Auth) Code2SessionContext(ctx context2.Context, jsCode string) (result ResCode2Session, err error) {
 	var response []byte
-	if response, err = util.HTTPGetContext(ctx, fmt.Sprintf(code2SessionURL, auth.AppID, auth.AppSecret, jsCode)); err != nil {
+	if response, err = util.HTTPGetContext(ctx, fmt.Sprintf("%s/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", auth.Server, auth.AppID, auth.AppSecret, jsCode)); err != nil {
 		return
 	}
 	if err = json.Unmarshal(response, &result); err != nil {
@@ -82,7 +76,7 @@ func (auth *Auth) CheckEncryptedDataContext(ctx context2.Context, encryptedMsgHa
 	if at, err = auth.GetAccessToken(); err != nil {
 		return
 	}
-	if response, err = util.HTTPPostContext(ctx, fmt.Sprintf(checkEncryptedDataURL, at), "encrypted_msg_hash="+encryptedMsgHash); err != nil {
+	if response, err = util.HTTPPostContext(ctx, fmt.Sprintf("%s/wxa/business/checkencryptedmsg?access_token=%s", auth.Server, at), "encrypted_msg_hash="+encryptedMsgHash); err != nil {
 		return
 	}
 	if err = util.DecodeWithError(response, &result, "CheckEncryptedDataAuth"); err != nil {

@@ -1,6 +1,6 @@
 # WeChat SDK for Go
-![Go](https://github.com/silenceper/wechat/workflows/Go/badge.svg?branch=release-2.0)
-[![Go Report Card](https://goreportcard.com/badge/github.com/silenceper/wechat)](https://goreportcard.com/report/github.com/silenceper/wechat)
+![Go](https://github.com/amazing-gao/wechat/workflows/Go/badge.svg?branch=release-2.0)
+[![Go Report Card](https://goreportcard.com/badge/github.com/amazing-gao/wechat)](https://goreportcard.com/report/github.com/amazing-gao/wechat)
 [![pkg](https://img.shields.io/badge/dev-reference-007d9c?logo=go&logoColor=white&style=flat)](https://pkg.go.dev/github.com/amazing-gao/wechat/v2?tab=doc)
 ![version](https://img.shields.io/badge/version-v2-green)
 
@@ -9,12 +9,7 @@
 
 
 ## 文档 && 例子
-[API列表](https://github.com/silenceper/wechat/tree/v2/doc/api)
-
-[Wechat SDK 2.0 文档](https://silenceper.com/wechat)
-
-[Wechat SDK 2.0 例子](https://github.com/gowechat/example)
-
+[API列表](https://github.com/amazing-gao/wechat/tree/v2/doc/api)
 
 ## 快速开始
 ```
@@ -28,10 +23,11 @@ import "github.com/amazing-gao/wechat/v2"
 wc := wechat.NewWechat()
 memory := cache.NewMemory()
 cfg := &offConfig.Config{
+    Server:    "https://api.weixin.qq.com",
     AppID:     "xxx",
     AppSecret: "xxx",
     Token:     "xxx",
-    //EncodingAESKey: "xxxx",
+    EncodingAESKey: "xxxx",
     Cache: memory,
 }
 officialAccount := wc.GetOfficialAccount(cfg)
@@ -66,14 +62,6 @@ server.Send()
 - work:企业微信
 - aispeech:智能对话
 - doc: api文档
-
-## 贡献
-- 在[API列表](https://github.com/silenceper/wechat/tree/v2/doc/api)中查看哪些API未实现
-- 提交issue，描述需要贡献的内容
-- 完成更改后，提交PR
-
-## 公众号
-![img](https://silenceper.oss-cn-beijing.aliyuncs.com/qrcode/search_study_program.png)
 
 ## License
 

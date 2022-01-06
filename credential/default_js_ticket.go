@@ -56,7 +56,7 @@ func (js *DefaultJsTicket) GetTicket(accessToken string) (ticketStr string, err 
 	}
 
 	var ticket ResTicket
-	ticket, err = js.GetTicketFromServer(accessToken)
+	ticket, err = GetTicketFromServer(fmt.Sprintf("%s/cgi-bin/ticket/getticket?access_token=%s&type=jsapi", js.server, accessToken))
 	if err != nil {
 		return
 	}
@@ -67,9 +67,8 @@ func (js *DefaultJsTicket) GetTicket(accessToken string) (ticketStr string, err 
 }
 
 // GetTicketFromServer 从服务器中获取ticket
-func (js *DefaultJsTicket) GetTicketFromServer(accessToken string) (ticket ResTicket, err error) {
+func GetTicketFromServer(url string) (ticket ResTicket, err error) {
 	var response []byte
-	url := fmt.Sprintf("%s/cgi-bin/ticket/getticket?access_token=%s&type=jsapi", js.server, accessToken)
 	response, err = util.HTTPGet(url)
 	if err != nil {
 		return

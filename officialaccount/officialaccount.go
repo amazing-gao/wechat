@@ -10,6 +10,7 @@ import (
 	"github.com/amazing-gao/wechat/v2/officialaccount/context"
 	"github.com/amazing-gao/wechat/v2/officialaccount/datacube"
 	"github.com/amazing-gao/wechat/v2/officialaccount/device"
+	"github.com/amazing-gao/wechat/v2/officialaccount/freepublish"
 	"github.com/amazing-gao/wechat/v2/officialaccount/js"
 	"github.com/amazing-gao/wechat/v2/officialaccount/material"
 	"github.com/amazing-gao/wechat/v2/officialaccount/menu"
@@ -126,4 +127,9 @@ func (officialAccount *OfficialAccount) GetOCR() *ocr.OCR {
 // GetSubscribe 公众号订阅消息
 func (officialAccount *OfficialAccount) GetSubscribe() *message.Subscribe {
 	return message.NewSubscribe(officialAccount.ctx)
+}
+
+// GetFreePublish 发布记录
+func (officialAccount *OfficialAccount) GetFreePublish() *freepublish.FreePublish {
+	return freepublish.NewFreePublish(officialAccount.ctx)
 }

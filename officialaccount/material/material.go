@@ -77,6 +77,26 @@ func (material *Material) GetNews(id string) ([]*Article, error) {
 	return res.NewsItem, nil
 }
 
+// GetMaterial 获取/下载永久素材
+func (material *Material) GetMaterial(id string) ([]byte, error) {
+	accessToken, err := material.GetAccessToken()
+	if err != nil {
+		return nil, err
+	}
+	uri := fmt.Sprintf("%s/cgi-bin/material/get_material?access_token=%s", material.Server, accessToken)
+
+	var req struct {
+		MediaID string `json:"media_id"`
+	}
+	req.MediaID = id
+	responseBytes, err := util.PostJSON(uri, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return responseBytes, nil
+}
+
 // reqArticles 永久性图文素材请求信息
 type reqArticles struct {
 	Articles []*Article `json:"articles"`

@@ -10,6 +10,7 @@ import (
 	"github.com/amazing-gao/wechat/v2/officialaccount/context"
 	"github.com/amazing-gao/wechat/v2/officialaccount/datacube"
 	"github.com/amazing-gao/wechat/v2/officialaccount/device"
+	"github.com/amazing-gao/wechat/v2/officialaccount/draft"
 	"github.com/amazing-gao/wechat/v2/officialaccount/freepublish"
 	"github.com/amazing-gao/wechat/v2/officialaccount/js"
 	"github.com/amazing-gao/wechat/v2/officialaccount/material"
@@ -132,4 +133,9 @@ func (officialAccount *OfficialAccount) GetSubscribe() *message.Subscribe {
 // GetFreePublish 发布记录
 func (officialAccount *OfficialAccount) GetFreePublish() *freepublish.FreePublish {
 	return freepublish.NewFreePublish(officialAccount.ctx)
+}
+
+// GetDraft 获取草稿箱
+func (officialAccount *OfficialAccount) GetDraft() *draft.Draft {
+	return draft.NewDraft(officialAccount.ctx)
 }

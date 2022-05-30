@@ -1,6 +1,8 @@
 package miniprogram
 
 import (
+	"net/http"
+
 	"github.com/amazing-gao/wechat/v2/credential"
 	"github.com/amazing-gao/wechat/v2/miniprogram/analysis"
 	"github.com/amazing-gao/wechat/v2/miniprogram/auth"
@@ -10,6 +12,7 @@ import (
 	"github.com/amazing-gao/wechat/v2/miniprogram/encryptor"
 	"github.com/amazing-gao/wechat/v2/miniprogram/message"
 	"github.com/amazing-gao/wechat/v2/miniprogram/qrcode"
+	"github.com/amazing-gao/wechat/v2/miniprogram/server"
 	"github.com/amazing-gao/wechat/v2/miniprogram/shortlink"
 	"github.com/amazing-gao/wechat/v2/miniprogram/subscribe"
 	"github.com/amazing-gao/wechat/v2/miniprogram/urllink"
@@ -44,6 +47,14 @@ func (miniProgram *MiniProgram) GetContext() *context.Context {
 // GetEncryptor  小程序加解密
 func (miniProgram *MiniProgram) GetEncryptor() *encryptor.Encryptor {
 	return encryptor.NewEncryptor(miniProgram.ctx)
+}
+
+// GetServer 小程序微信回调处理，接收事件，回复消息管理
+func (miniProgram *MiniProgram) GetServer(req *http.Request, write http.ResponseWriter) *server.Server {
+	srv := server.NewServer(miniProgram.ctx)
+	srv.Request = req
+	srv.Write = write
+	return srv
 }
 
 // GetAuth 登录/用户信息相关接口

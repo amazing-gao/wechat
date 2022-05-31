@@ -1,8 +1,6 @@
 package miniprogram
 
 import (
-	"net/http"
-
 	"github.com/amazing-gao/wechat/v2/credential"
 	"github.com/amazing-gao/wechat/v2/miniprogram/analysis"
 	"github.com/amazing-gao/wechat/v2/miniprogram/auth"
@@ -50,10 +48,8 @@ func (miniProgram *MiniProgram) GetEncryptor() *encryptor.Encryptor {
 }
 
 // GetServer 小程序微信回调处理，接收事件，回复消息管理
-func (miniProgram *MiniProgram) GetServer(req *http.Request, write http.ResponseWriter) *server.Server {
+func (miniProgram *MiniProgram) GetServer() *server.Server {
 	srv := server.NewServer(miniProgram.ctx)
-	srv.Request = req
-	srv.Write = write
 	return srv
 }
 

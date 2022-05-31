@@ -1,14 +1,11 @@
 package server
 
 import (
-	"encoding/xml"
-	"errors"
+	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"log"
 	"net/http"
-	"reflect"
-	"runtime/debug"
-	"strconv"
 
 	"github.com/amazing-gao/wechat/v2/miniprogram/context"
 	"github.com/amazing-gao/wechat/v2/miniprogram/message"
@@ -16,25 +13,56 @@ import (
 )
 
 // Server struct
-type Server struct {
-	*context.Context
-	Write        http.ResponseWriter
-	Request      *http.Request
-	skipValidate bool
-	openID       string
+type (
+	Server struct {
+		*context.Context
+		messageHandler MessageHandler
+	}
 
-	messageHandler func(mixMessage *message.MiniProgramMixMessage) *message.Reply
+	MessageHandler func(mixMessage *message.MiniProgramMixMessage) *message.Reply
+)
 
-	RequestRawXMLMsg []byte
-	RequestMsg       *message.MiniProgramMixMessage
+// miniProgramMixMessage 小程序回调的消息结构
+type miniProgramMixMessage struct {
+	message.CommonToken
 
-	ResponseRawXMLMsg []byte
-	ResponseMsg       interface{}
+	MsgID int64 `xml:"MsgId"`
 
-	isSafeMode bool
-	random     []byte
-	nonce      string
-	timestamp  int64
+	// 文本消息
+	Content string `xml:"Content"`
+
+	// 图片消息
+	PicURL  string `xml:"PicUrl"`
+	MediaID string `xml:"MediaId"`
+
+	// 小程序卡片消息
+	Title        string `xml:"Title"`
+	AppID        string `xml:"AppId"`
+	PagePath     string `xml:"PagePath"`
+	ThumbURL     string `xml:"ThumbUrl"`
+	ThumbMediaID string `xml:"ThumbMediaId"`
+
+	// 进入会话事件
+	Event       message.EventType `xml:"Event"`
+	SessionFrom string            `xml:"SessionFrom"`
+
+	// 用户操作订阅通知弹窗消息回调
+	List []message.SubscribeMessageList `xml:"-" json:"List"`
+
+	// 用户操作订阅通知弹窗消息回调
+	SubscribeMsgPopupEvent struct {
+		List []message.SubscribeMessageList `xml:"List"`
+	} `xml:"SubscribeMsgPopupEvent"`
+
+	// 用户管理订阅通知回调
+	SubscribeMsgChangeEvent struct {
+		List []message.SubscribeMessageList `xml:"List"`
+	} `xml:"SubscribeMsgChangeEvent"`
+
+	// 用户发送订阅通知回调
+	SubscribeMsgSentEvent struct {
+		List []message.SubscribeMessageList `xml:"List"`
+	} `xml:"SubscribeMsgSentEvent"`
 }
 
 func NewServer(context *context.Context) *Server {
@@ -43,158 +71,124 @@ func NewServer(context *context.Context) *Server {
 	return srv
 }
 
-func (srv *Server) Server() error {
-	if !srv.Validate() {
-		return fmt.Errorf("请求签名校验失败")
-	}
-	echoStr := srv.Query("echostr")
-	if echoStr != "" {
-		srv.SetResponseWrite(echoStr)
-		return nil
-	}
-
-	response, err := srv.handleRequest()
-	if err != nil {
-		return err
-	}
-
-	return srv.buildResponse(response)
-
+func (srv *Server) SetMessageHandler(messageHandler MessageHandler) {
+	srv.messageHandler = messageHandler
 }
 
-// SkipValidate 设置跳过签名校验
-func (srv *Server) SkipValidate(skip bool) {
-	srv.skipValidate = skip
-}
-
-// Validate 校验请求是否合法
-func (srv *Server) Validate() bool {
-	if srv.skipValidate {
-		return true
-	}
-	timestamp := srv.Query("timestamp")
-	nonce := srv.Query("nonce")
-	signature := srv.Query("signature")
-	return signature == util.Signature(srv.Token, timestamp, nonce)
-}
-
-func (srv *Server) handleRequest() (reply *message.Reply, err error) {
-	// set isSafeMode
-	srv.isSafeMode = false
-	encryptType := srv.Query("encrypt_type")
-	if encryptType == "aes" {
-		srv.isSafeMode = true
-	}
-	// set openID
-	srv.openID = srv.Query("openid")
-
-	var msg interface{}
-	msg, err = srv.getMessage()
-	if err != nil {
-		return
-	}
-	mixMessage, success := msg.(*message.MiniProgramMixMessage)
-	if !success {
-		err = errors.New("消息类型转换失败")
-	}
-	srv.RequestMsg = mixMessage
-	reply = srv.messageHandler(mixMessage)
-	return
-}
-
-// GetOpenID return openID
-func (srv *Server) GetOpenID() string {
-	return srv.openID
-}
-
-func (srv *Server) getMessage() (interface{}, error) {
-	var rawXMLMsgBytes []byte
-	var err error
-	if srv.isSafeMode {
-		var encryptedXMLMsg message.EncryptedXMLMsg
-		if err := xml.NewDecoder(srv.Request.Body).Decode(&encryptedXMLMsg); err != nil {
-			return nil, fmt.Errorf("从body中解析xml失败，err=%v", err)
-		}
-		// 验证消息签名
-		timestamp := srv.Query("timestamp")
-		srv.timestamp, err = strconv.ParseInt(timestamp, 10, 32)
-		if err != nil {
-			return nil, err
-		}
-		nonce := srv.Query("nonce")
-		srv.nonce = nonce
-		msgSignature := srv.Query("msg_signature")
-		msgSignatureGen := util.Signature(srv.Token, timestamp, nonce, encryptedXMLMsg.EncryptedMsg)
-		if msgSignature != msgSignatureGen {
-			return nil, fmt.Errorf("消息不合法，验证签名失败")
-		}
-
-		// 解密
-		srv.random, rawXMLMsgBytes, err = util.DecryptMsg(srv.AppID, encryptedXMLMsg.EncryptedMsg, srv.EncodingAESKey)
-		if err != nil {
-			return nil, fmt.Errorf("消息解密失败, err=%v", err)
-		}
+// ServeHTTP 小程序消息处理中间件
+// GET 验证消息的确来自微信服务器
+// POST 处理客服消息
+func (srv *Server) ServeHTTP(request *http.Request, writer http.ResponseWriter) {
+	if request.Method == "GET" {
+		srv.messageHandleValid(request, writer)
+	} else if request.Method == "POST" {
+		srv.messageHandle(request, writer)
 	} else {
-		rawXMLMsgBytes, err = ioutil.ReadAll(srv.Request.Body)
-		if err != nil {
-			return nil, fmt.Errorf("从body中解析xml失败, err=%v", err)
+		srv.messageHandleNotSupport(request, writer)
+	}
+}
+
+// messageHandleValid 消息校验
+func (srv *Server) messageHandleValid(request *http.Request, writer http.ResponseWriter) {
+	var (
+		query     = request.URL.Query()
+		nonce     = query.Get("nonce")
+		echostr   = query.Get("echostr")
+		signature = query.Get("signature")
+		timestamp = query.Get("timestamp")
+	)
+
+	if signature == util.Signature(srv.Token, timestamp, nonce) {
+		writer.Write([]byte(echostr))
+	} else {
+		writer.Write([]byte("invalid"))
+	}
+}
+
+func (srv *Server) messageHandle(request *http.Request, writer http.ResponseWriter) {
+	var (
+		err          error
+		contentType  = request.Header.Get("Content-Type")
+		query        = request.URL.Query()
+		nonce        = query.Get("nonce")
+		timestamp    = query.Get("timestamp")
+		encryptType  = query.Get("encrypt_type")
+		msgSignature = query.Get("msg_signature")
+	)
+
+	for ok := true; ok; ok = !ok {
+		var (
+			encryptData          []byte
+			encryptMsg           message.EncryptedMsg
+			mixMessage           miniProgramMixMessage
+			mixMessageReader     io.Reader
+			subscribeMessageList []message.SubscribeMessageList
+		)
+
+		if encryptType == "aes" {
+			// 解析密文消息
+			// 校验消息是否合法
+			// 解密密文消息
+			if err = Decode(contentType, request.Body, &encryptMsg); err != nil {
+				break
+			} else if util.Signature(srv.Token, timestamp, nonce, encryptMsg.EncryptedMsg) != msgSignature {
+				err = fmt.Errorf("invalid message")
+				break
+			} else if _, encryptData, err = util.DecryptMsg(srv.AppID, encryptMsg.EncryptedMsg, srv.EncodingAESKey); err != nil {
+				break
+			}
+
+			mixMessageReader = bytes.NewBuffer(encryptData)
+		} else {
+			mixMessageReader = request.Body
 		}
-	}
-	srv.RequestRawXMLMsg = rawXMLMsgBytes
-	return srv.parseRequestMessage(rawXMLMsgBytes)
-}
 
-func (srv *Server) parseRequestMessage(rawXMLMsgBytes []byte) (msg *message.MiniProgramMixMessage, err error) {
-	msg = &message.MiniProgramMixMessage{}
-	err = xml.Unmarshal(rawXMLMsgBytes, msg)
-	return
-}
-
-func (srv *Server) SetMessageHandler(handler func(*message.MiniProgramMixMessage) *message.Reply) {
-	srv.messageHandler = handler
-}
-
-func (srv *Server) buildResponse(reply *message.Reply) (err error) {
-	defer func() {
-		if e := recover(); e != nil {
-			err = fmt.Errorf("panic error: %v\n%s", e, debug.Stack())
+		// 解析到明文结构
+		if err = Decode(contentType, mixMessageReader, &mixMessage); err != nil {
+			break
 		}
-	}()
-	if reply == nil {
-		return nil
+
+		// 处理订阅消息json和xml格式不同的情况
+		if IsXML(contentType) {
+			switch mixMessage.Event {
+			case message.EventSubscribeSent:
+				subscribeMessageList = mixMessage.SubscribeMsgSentEvent.List
+			case message.EventSubscribePopup:
+				subscribeMessageList = mixMessage.SubscribeMsgPopupEvent.List
+			case message.EventSubscribeChange:
+				subscribeMessageList = mixMessage.SubscribeMsgChangeEvent.List
+			}
+		} else {
+			subscribeMessageList = mixMessage.List
+		}
+
+		// 处理消息
+		srv.messageHandler(&message.MiniProgramMixMessage{
+			CommonToken:  mixMessage.CommonToken,
+			MsgID:        mixMessage.MsgID,
+			Content:      mixMessage.Content,
+			PicURL:       mixMessage.PicURL,
+			MediaID:      mixMessage.MediaID,
+			Title:        mixMessage.Title,
+			AppID:        mixMessage.AppID,
+			PagePath:     mixMessage.PagePath,
+			ThumbURL:     mixMessage.ThumbURL,
+			ThumbMediaID: mixMessage.ThumbMediaID,
+			Event:        mixMessage.Event,
+			SessionFrom:  mixMessage.SessionFrom,
+			List:         subscribeMessageList,
+		})
 	}
-	msgType := reply.MsgType
-	switch msgType {
-	case message.MsgTypeEvent:
-	case message.MsgTypeImage:
-	case message.MsgTypeLink:
-	case message.MsgTypeText:
-	case message.MsgTypeMiniProgramPage:
-	default:
-		err = message.ErrUnsupportedReply
-		return
+
+	if err != nil {
+		log.Printf("miniprogram.Message.Handle.Error: %s\n", err)
 	}
-	msgData := reply.MsgData
-	value := reflect.ValueOf(msgData)
-	// msgData must be a ptr
-	kind := value.Kind().String()
-	if kind != "ptr" {
-		return message.ErrUnsupportedReply
-	}
-	params := make([]reflect.Value, 1)
-	params[0] = reflect.ValueOf(srv.RequestMsg.FromUserName)
-	value.MethodByName("SetToUserName").Call(params)
 
-	params[0] = reflect.ValueOf(srv.RequestMsg.ToUserName)
-	value.MethodByName("SetFromUserName").Call(params)
+	writer.Write([]byte("success"))
+}
 
-	params[0] = reflect.ValueOf(srv.RequestMsg.MsgType)
-	value.MethodByName("SetMsgType").Call(params)
-
-	params[0] = reflect.ValueOf(util.GetCurrTS())
-	value.MethodByName("SetCreateTime").Call(params)
-
-	srv.ResponseMsg = msgData
-	srv.ResponseRawXMLMsg, err = xml.Marshal(msgData)
-	return
+// messageHandleNotSupport 不支持的消息
+func (srv *Server) messageHandleNotSupport(request *http.Request, writer http.ResponseWriter) {
+	writer.WriteHeader(http.StatusMethodNotAllowed)
+	writer.Write([]byte("Method Not Allowed"))
 }

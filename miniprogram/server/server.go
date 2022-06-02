@@ -65,6 +65,49 @@ type miniProgramMixMessage struct {
 	} `xml:"SubscribeMsgSentEvent"`
 }
 
+// miniProgramMixMessage1 小程序回调的消息结构
+type miniProgramMixMessage1 struct {
+	message.CommonToken
+
+	MsgID int64 `xml:"MsgId"`
+
+	// 文本消息
+	Content string `xml:"Content"`
+
+	// 图片消息
+	PicURL  string `xml:"PicUrl"`
+	MediaID string `xml:"MediaId"`
+
+	// 小程序卡片消息
+	Title        string `xml:"Title"`
+	AppID        string `xml:"AppId"`
+	PagePath     string `xml:"PagePath"`
+	ThumbURL     string `xml:"ThumbUrl"`
+	ThumbMediaID string `xml:"ThumbMediaId"`
+
+	// 进入会话事件
+	Event       message.EventType `xml:"Event"`
+	SessionFrom string            `xml:"SessionFrom"`
+
+	// 用户操作订阅通知弹窗消息回调
+	List message.SubscribeMessageList `xml:"-" json:"List"`
+
+	// 用户操作订阅通知弹窗消息回调
+	SubscribeMsgPopupEvent struct {
+		List []message.SubscribeMessageList `xml:"List"`
+	} `xml:"SubscribeMsgPopupEvent"`
+
+	// 用户管理订阅通知回调
+	SubscribeMsgChangeEvent struct {
+		List []message.SubscribeMessageList `xml:"List"`
+	} `xml:"SubscribeMsgChangeEvent"`
+
+	// 用户发送订阅通知回调
+	SubscribeMsgSentEvent struct {
+		List []message.SubscribeMessageList `xml:"List"`
+	} `xml:"SubscribeMsgSentEvent"`
+}
+
 func NewServer(context *context.Context) *Server {
 	srv := new(Server)
 	srv.Context = context
@@ -121,6 +164,7 @@ func (srv *Server) messageHandle(request *http.Request, writer http.ResponseWrit
 			encryptData          []byte
 			encryptMsg           message.EncryptedMsg
 			mixMessage           miniProgramMixMessage
+			mixMessage1          miniProgramMixMessage1
 			mixMessageReader     io.Reader
 			subscribeMessageList []message.SubscribeMessageList
 		)
@@ -145,7 +189,18 @@ func (srv *Server) messageHandle(request *http.Request, writer http.ResponseWrit
 
 		// 解析到明文结构
 		if err = Decode(contentType, mixMessageReader, &mixMessage); err != nil {
-			break
+			if IsXML(contentType) {
+				break
+			}
+
+			if IsJSON(contentType) {
+				// 若 "List" 只有一个对象，则只返回对象本身；若 "List" 多于一个对象，则返回一个包含所有对象的数组。
+				if err = Decode(contentType, bytes.NewBuffer(encryptData), &mixMessage1); err != nil {
+					break
+				}
+
+				mixMessage.List = []message.SubscribeMessageList{mixMessage1.List}
+			}
 		}
 
 		// 处理订阅消息json和xml格式不同的情况
